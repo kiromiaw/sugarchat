@@ -1,12 +1,14 @@
 <!-- todo list -->
 <script lang="ts">
     import { onDestroy, onMount, tick } from 'svelte';
-    import { get } from 'svelte/store';
-    import { token } from '../stores/auth';
     import { showPage, currentChat } from "../lib/pageStore"
     import ChatMessage from '../components/ChatMessage.svelte'
     import { leaveRoom } from '../lib/roomApi'
     import { getRoomData, loadMessages, sendMessage } from '../lib/chatApi'
+
+    import { get } from "svelte/store";
+    import { domain } from "../lib/domain";
+    var API = get(domain);
 
     import Popup from '../components/Popup.svelte'
     let roomSettings: boolean = false;
@@ -20,7 +22,7 @@
     $: roomId = $currentChat;
 
     function connectWS() {
-        ws = new WebSocket('ws://localhost:5001');
+        ws = new WebSocket(`ws://${API}:5001`);
 
         ws.onopen = () => console.log('ws connected');
         ws.onmessage = async (e) => {

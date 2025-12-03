@@ -18,7 +18,7 @@ export async function verifySavedLogin() {
   if (!savedToken) return false;//no token return
 
   try {
-    const res = await axios.get(`${API}/users/me`, {
+    const res = await axios.get(`http://${API}:1300/users/me`, {
       headers: { Authorization: `Bearer ${savedToken}` }
     });
     token.set(savedToken);
@@ -33,17 +33,17 @@ export async function login(username: string, password: string, targetDomain:str
   if(targetDomain){
     domain.set(targetDomain); // domain persists
     console.log(targetDomain)
-    console.log(`${API}`)
+    console.log(`http://${API}:1300`)
   }
   else return;
 
   try {
-    const res = await axios.post(`${API}/users/login`, { username, password });
+    const res = await axios.post(`http://${API}:1300/users/login`, { username, password });
     token.set(res.data.token);
     localStorage.setItem("authToken", res.data.token);
 
     // fetch current user
-    const userRes = await axios.get(`${API}/users/me`, {
+    const userRes = await axios.get(`http://${API}:1300/users/me`, {
       headers: { Authorization: `Bearer ${res.data.token}` }
     });
     user.set(userRes.data);
@@ -57,10 +57,10 @@ export async function login(username: string, password: string, targetDomain:str
 
 export async function register(username: string, password: string) {
   try {
-    const res = await axios.post(`${API}/users/register`, { username, password });
+    const res = await axios.post(`http://${API}:1300/users/register`, { username, password });
     token.set(res.data.token);
 
-    const userRes = await axios.get(`${API}/users/me`, {
+    const userRes = await axios.get(`http://${API}:1300/users/me`, {
       headers: { Authorization: `Bearer ${res.data.token}` }
     });
     user.set(userRes.data);
