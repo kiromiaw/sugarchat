@@ -5,7 +5,7 @@ var API = get(domain);
 
 export async function loadRooms() {
     const t = get(token);
-    const res = await fetch(`${API}/rooms/`, {
+    const res = await fetch(`http://${API}:1300/rooms/`, {
         headers: {
         Authorization: `Bearer ${t}`,
         },
@@ -20,7 +20,7 @@ export async function loadRooms() {
 
 export async function joinRoom(room:string){
     const t = get(token);
-    const res = await fetch(`${API}/rooms/${room}/join`, {
+    const res = await fetch(`http://${API}:1300/rooms/${room}/join`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${t}`,
@@ -34,7 +34,7 @@ export async function joinRoom(room:string){
 export async function leaveRoom(room:string){
     console.log(room);
     const t = get(token);
-    const res = await fetch(`${API}/rooms/${room}/leave`, {
+    const res = await fetch(`http://${API}:1300/rooms/${room}/leave`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${t}`,

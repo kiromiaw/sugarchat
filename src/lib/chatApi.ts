@@ -6,7 +6,7 @@ var API = get(domain);
 export async function getRoomData(roomId : string) {
     const t = get(token);
 
-    const res = await fetch(`${API}/rooms/${roomId}`, {
+    const res = await fetch(`http://${API}:1300/rooms/${roomId}`, {
         headers: { Authorization: `Bearer ${t}` }
     });
     return await res.json();
@@ -15,7 +15,7 @@ export async function getRoomData(roomId : string) {
 export async function loadMessages(roomId : string ) {
     const t = get(token);
     
-    const res = await fetch(`${API}/rooms/${roomId}/messages`, {
+    const res = await fetch(`http://${API}:1300/rooms/${roomId}/messages`, {
         headers: { Authorization: `Bearer ${t}` }
     });
     return await res.json();
@@ -29,7 +29,7 @@ export async function sendMessage(msgText:string,roomId:string) {
     const t = get(token);
 
     try {
-        const res = await fetch(`${API}/rooms/${roomId}/messages`, {
+        const res = await fetch(`http://${API}:1300/rooms/${roomId}/messages`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${t}`,'Content-Type': 'application/json' },
             body: JSON.stringify({
