@@ -42,6 +42,7 @@
     async function handleLeave() {
         if (!roomId) return;
         await leaveRoom(roomId);
+        handleDestroy()
         showPage('roomList')
     }
 
@@ -69,7 +70,10 @@
 
     function handleKey(e: KeyboardEvent) {
         if (e.key === 'Enter') handleSendMessage();
-        if (e.key === 'Escape') showPage("roomList");
+        if (e.key === 'Escape'){
+            handleDestroy()
+            showPage("roomList");
+        }
     }
 
     onMount(() => {
@@ -79,9 +83,14 @@
         window.addEventListener("keydown", handleKey);
     });
 
-    onDestroy(() => {
+    //making this a function since sometimes destroying doesn't run when leaving room
+    function handleDestroy(){
         ws.close();
         window.removeEventListener("keydown", handleKey);
+    }
+
+    onDestroy(() => {
+        handleDestroy()
     });
 
 </script>
