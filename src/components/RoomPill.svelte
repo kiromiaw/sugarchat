@@ -19,6 +19,7 @@
 .main{
     all:unset;
     border: 2px solid #333;
+    border-radius: 10px;
     height:3cm;
     width:auto;
     margin:0.1cm 0cm;
@@ -48,6 +49,7 @@
     aspect-ratio: 1/1;
     margin: 0.2cm;
     object-fit: cover;
+    border-radius: 10px;
 }
 
 .infotitle{

@@ -1,19 +1,43 @@
+<!-- todo list -->
 <script lang="ts">
+    import { onDestroy, onMount, tick } from 'svelte';
+    import { get } from 'svelte/store';
+    import { token } from '../stores/auth';
     import { showPage, currentChat } from "../lib/pageStore"
     import ChatMessage from '../components/ChatMessage.svelte'
-    import { onDestroy, onMount, tick } from 'svelte';
     import { leaveRoom } from '../lib/roomApi'
+    import { getRoomData, loadMessages, sendMessage } from '../lib/chatApi'
 
     import Popup from '../components/Popup.svelte'
     let roomSettings: boolean = false;
 
+    let ws: WebSocket;
     let messages: any[] = []
     let roomData: any = {};
     let chatContainer: HTMLDivElement;
     let msgText: string;
     
-    const userId: string = "67096aa8-632c-4c9a-b1c9-671388d85975"; //fix this later
     $: roomId = $currentChat;
+
+    function connectWS() {
+        ws = new WebSocket('ws://localhost:5001');
+
+        ws.onopen = () => console.log('ws connected');
+        ws.onmessage = async (e) => {
+        const data = JSON.parse(e.data);
+        if (data.type === 'message' && data.roomId === roomId) {
+            messages = [...messages, data.message];
+            await tick();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        };
+
+        ws.onclose = () => {
+        console.log('ws disconnected, reconnecting in 2s');
+        setTimeout(connectWS, 2000);
+        };
+    }
+
 
     async function handleLeave() {
         if (!roomId) return;
@@ -21,58 +45,42 @@
         showPage('roomList')
     }
 
-    async function getRoomData() {
-        const res = await fetch(`http://127.0.0.1:1300/rooms/${roomId}`);
-        roomData = await res.json();
-    }
-
-    async function loadMessages() {
-        const res = await fetch(`http://127.0.0.1:1300/rooms/${roomId}/messages`);
-        messages = await res.json();
-
-        // scroll to bottom after loading
-        await tick();
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    async function sendMessage() {
-        if(!msgText) return;
-        try {
-            const res = await fetch(`http://127.0.0.1:1300/rooms/${roomId}/messages`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: msgText,
-                    owner: userId,
-                    room: roomId
-                })
-            });
-            
-            if (!res.ok) throw new Error('Failed to send message');
-            
-            msgText = '';
-            const data = await res.json();
-            console.log('message sent', data);
-            loadMessages() // ! REMOVE THIS LATER, MAKE IT BETTER !
-            return data;
-        } catch (err) {
-            console.error(err);
+    async function handleGetRoomData() {
+        if (roomId){
+            roomData = await getRoomData(roomId);
         }
+    }
+
+    async function handleLoadMessages() {
+        if (roomId){
+            messages = await loadMessages(roomId);
+            await tick();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+
+    async function handleSendMessage() {
+        if (roomId){
+            await sendMessage(msgText, roomId)
+        }
+        msgText = "";
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
     function handleKey(e: KeyboardEvent) {
-        if (e.key === 'Enter') sendMessage();
+        if (e.key === 'Enter') handleSendMessage();
         if (e.key === 'Escape') showPage("roomList");
     }
 
     onMount(() => {
-        getRoomData();
-        loadMessages();
+        connectWS();
+        handleGetRoomData();
+        handleLoadMessages();
         window.addEventListener("keydown", handleKey);
     });
 
     onDestroy(() => {
+        ws.close();
         window.removeEventListener("keydown", handleKey);
     });
 
@@ -93,8 +101,8 @@
         {/each}
     </div>
     <footer>
-        <input on:keydown={handleKey} class="text-input" placeholder="Send message..." type="text" bind:value={msgText}/>
-        <button on:click={() => sendMessage()}>
+        <input class="text-input" placeholder="Send message..." type="text" bind:value={msgText}/>
+        <button on:click={() => handleSendMessage()}>
             send
         </button>
     </footer>

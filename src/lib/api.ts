@@ -13,6 +13,7 @@ export async function logout(){
 }
 
 export async function verifySavedLogin() {
+  console.log("checking login...")
   const savedToken = localStorage.getItem("authToken"); //get token
   if (!savedToken) return false;//no token return
 
@@ -32,6 +33,7 @@ export async function login(username: string, password: string, targetDomain:str
   if(targetDomain){
     domain.set(targetDomain); // domain persists
     console.log(targetDomain)
+    console.log(`${API}`)
   }
   else return;
 

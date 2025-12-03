@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { showPage, currentChat } from "../lib/pageStore"
+    import { showPage } from "../lib/pageStore"
     import { login, verifySavedLogin } from "$lib/api";
     let username = "";
     let password = "";
@@ -18,7 +18,6 @@
 
 </script>
 
-<!-- TODO make this prettier -->
 <h1>sugarchat login</h1>
 
 <form>
@@ -47,6 +46,7 @@
         display:block;
         width: auto;
         box-sizing: border-box;
+        border-radius: 5px;
     }
 
     button{
@@ -54,7 +54,8 @@
         background-color: #333;
         padding: 0.5em 1em;
         margin: 0.5em 0.2cm;
-        width: fit-content
+        width: fit-content;
+        border-radius: 10px;
     }
 
     button:hover{

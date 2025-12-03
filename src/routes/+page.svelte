@@ -16,11 +16,10 @@
   import RoomList from './RoomList.svelte';
   import ChatRoom from './ChatRoom.svelte';
   import Login from './Login.svelte';
-  import { login } from "$lib/api";
   import "../styles.css"
   const pages = { roomList: RoomList, chatRoom: ChatRoom, login: Login } as const;
 
-  //autologin if you're already logged in or whatever
+  // autologin if you're already logged in or whatever
   const token = localStorage.getItem("authToken");
 
   if (token) {

@@ -3,8 +3,8 @@ import { get } from "svelte/store";
 import { domain } from "./domain";
 var API = get(domain);
 
-async function getRoomData(roomId : string) { //MOVE ME TO ROOMAPI
-    const t = token;
+export async function getRoomData(roomId : string) {
+    const t = get(token);
 
     const res = await fetch(`${API}/rooms/${roomId}`, {
         headers: { Authorization: `Bearer ${t}` }
@@ -12,9 +12,9 @@ async function getRoomData(roomId : string) { //MOVE ME TO ROOMAPI
     return await res.json();
 }
 
-async function loadMessages(roomId : string) {
-    const t = token;
-
+export async function loadMessages(roomId : string ) {
+    const t = get(token);
+    
     const res = await fetch(`${API}/rooms/${roomId}/messages`, {
         headers: { Authorization: `Bearer ${t}` }
     });
@@ -25,16 +25,15 @@ async function loadMessages(roomId : string) {
     // chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-async function sendMessage(msgText:string,userId:string,roomId:string) {
-    const t = token;
-    // if(!msgText) return;
+export async function sendMessage(msgText:string,roomId:string) {
+    const t = get(token);
+
     try {
         const res = await fetch(`${API}/rooms/${roomId}/messages`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${t}`,'Content-Type': 'application/json' },
             body: JSON.stringify({
                 text: msgText,
-                owner: userId,
                 room: roomId
             })
         });
